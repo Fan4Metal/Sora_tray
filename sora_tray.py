@@ -78,13 +78,13 @@ def create_icon(text: str, color, font):
 
     def get_text_pos_size(text):
         if len(text) == 3:
-            return (0, 28), 80
+            return (0, 58), 150
         elif len(text) == 2:
-            return (4, 16), 110
+            return (8, 32), 220
         elif len(text) == 1:
-            return (34, 16), 110
+            return (70, 32), 220
 
-    image = Image.new(mode="RGBA", size=(128, 128), color=background_color)
+    image = Image.new(mode="RGBA", size=(256, 256), color=background_color)
     # Call draw Method to add 2D graphics in an image
     I1 = ImageDraw.Draw(image)
     # Custom font style and font size
@@ -92,6 +92,8 @@ def create_icon(text: str, color, font):
     myFont = ImageFont.truetype(font, size)
     # Add Text to an image
     I1.text(text_pos, text, font=myFont, fill=color)
+    # image.show()
+    # exit()
     return PIL2wx(image)
 
 
