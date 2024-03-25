@@ -1,0 +1,2 @@
+wxPython==4.2.1
+hidapi==0.14.0
