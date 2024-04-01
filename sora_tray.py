@@ -46,7 +46,7 @@ def get_device_list():
     return device_list
 
 
-def get_battery1():
+def get_battery():
     try:
         device_list = get_device_list()
     except RuntimeError as e:
@@ -70,10 +70,14 @@ def get_battery1():
     charging = res[10]
     full_charge = res[11]
     online = res[12]
+    logging.info(f"Battery:     {battery}")
+    logging.info(f"Charging:    {charging}")
+    logging.info(f"Full_charge: {full_charge}")
+    logging.info(f"Online:      {online}")
     return battery, charging, full_charge, online
 
 
-def get_battery():
+def get_battery2():
     return 49, 1, 0, 1
 
 
@@ -131,7 +135,7 @@ class MyTaskBarIcon(TaskBarIcon):
         self.frame.Destroy()
 
     def OnClick(self, event):
-        if self.frame.battery_str == "Zzz":
+        if self.frame.battery_str == "Zzz" or self.frame.battery_str == "-":
             self.frame.show_battery()
 
 
@@ -146,6 +150,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Centre()
 
+        self.animation_thread = threading.Thread(target=self.charge_animation, daemon=True)
         self.thread = threading.Thread(target=self.thread_worker, daemon=True)
         self.thread.start()
 
@@ -165,12 +170,12 @@ class MyFrame(wx.Frame):
             self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), "No Mouse Detected")
             return
 
-        battery, charge, full_charge, online = result
+        battery, charging, full_charge, online = result
 
-        if not online:
-            self.stop_animation = True
-            self.battery_str = "Zzz"
-            self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), MODEL)
+        if charging:
+            self.stop_animation = False
+            if not self.animation_thread.is_alive():
+                self.animation_thread.start()
             return
 
         if full_charge:
@@ -178,10 +183,16 @@ class MyFrame(wx.Frame):
             self.tray_icon.SetIcon(wx.Icon(R".\icons\battery_100_green.ico"), MODEL)
             return
 
-        if charge:
-            self.stop_animation = False
-            self.animation_thread = threading.Thread(target=self.charge_animation, daemon=True)
-            self.animation_thread.start()
+        if not online:
+            self.stop_animation = True
+            self.battery_str = "Zzz"
+            self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), MODEL)
+            return
+
+        if battery == 100:
+            self.stop_animation = True
+            self.battery_str = str(battery)
+            self.tray_icon.SetIcon(wx.Icon(R".\icons\battery_100.ico"), MODEL)
             return
 
         self.stop_animation = True
