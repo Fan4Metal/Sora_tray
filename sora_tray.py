@@ -74,7 +74,7 @@ def get_battery1():
 
 
 def get_battery():
-    return 0, 0, 0, 1
+    return 49, 1, 0, 1
 
 
 def create_icon(text: str, color, font):
@@ -141,15 +141,13 @@ class MyFrame(wx.Frame):
         super().__init__(parent, title=title, pos=(-1, -1), size=(290, 280))
         self.SetSize((350, 250))
         self.tray_icon = MyTaskBarIcon(self)
-        self.show_battery()
+        self.tray_icon.SetIcon(create_icon(" ", foreground_color, font), "")
+        self.battery_str = ""
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Centre()
 
         self.thread = threading.Thread(target=self.thread_worker, daemon=True)
         self.thread.start()
-        # self.stop_animation = False
-        # self.thread = threading.Thread(target=self.charge_animation, daemon=True)
-        # self.thread.start()
 
     def OnClose(self, event):
         if self.IsShown():
@@ -162,7 +160,6 @@ class MyFrame(wx.Frame):
 
     def show_battery(self):
         result = get_battery()
-
         if result == None:
             self.battery_str = "-"
             self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), "No Mouse Detected")
