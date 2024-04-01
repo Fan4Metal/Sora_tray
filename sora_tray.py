@@ -190,19 +190,25 @@ class MyFrame(wx.Frame):
 
         if full_charge:
             self.stop_animation = True
-            self.tray_icon.SetIcon(wx.Icon(R".\icons\battery_100_green.ico"), MODEL)
+            if self.animation_thread.is_alive():
+                self.animation_thread.join()
+            self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_100_green.ico")), MODEL)
             return
 
         if not online:
             self.stop_animation = True
             self.battery_str = "Zzz"
+            if self.animation_thread.is_alive():
+                self.animation_thread.join()
             self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), MODEL)
             return
 
         if battery == 100:
             self.stop_animation = True
             self.battery_str = str(battery)
-            self.tray_icon.SetIcon(wx.Icon(R".\icons\battery_100.ico"), MODEL)
+            if self.animation_thread.is_alive():
+                self.animation_thread.join()
+            self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_100.ico")), MODEL)
             return
 
         self.stop_animation = True
