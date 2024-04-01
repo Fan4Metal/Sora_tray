@@ -1,3 +1,5 @@
+import os
+import sys
 import time
 import logging
 import threading
@@ -29,6 +31,14 @@ background_color = (0, 0, 0, 0)
 font = "consola.ttf"
 
 logging.basicConfig(level=logging.INFO)
+
+
+def get_resource(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 def get_path(device_list, usage_page):
@@ -201,11 +211,11 @@ class MyFrame(wx.Frame):
 
     def charge_animation(self):
         while not self.stop_animation:
-            self.tray_icon.SetIcon(wx.Icon(R".\icons\battery_0.ico"), MODEL)
+            self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_0.ico")), MODEL)
             time.sleep(0.5)
-            self.tray_icon.SetIcon(wx.Icon(R".\icons\battery_50.ico"), MODEL)
+            self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_50.ico")), MODEL)
             time.sleep(0.5)
-            self.tray_icon.SetIcon(wx.Icon(R".\icons\battery_100.ico"), MODEL)
+            self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_100.ico")), MODEL)
             time.sleep(0.5)
 
 
