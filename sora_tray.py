@@ -169,8 +169,12 @@ class MyFrame(wx.Frame):
 
     def show_battery(self):
         result = get_battery()
+
         if result == None:
+            self.stop_animation = False
             self.battery_str = "-"
+            if not self.animation_thread.is_alive():
+                self.animation_thread.join()
             self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), "No Mouse Detected")
             return
 
