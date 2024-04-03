@@ -41,7 +41,7 @@ def get_resource(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def get_path(device_list, usage_page):
+def get_device_path(device_list, usage_page):
     for device in device_list:
         if device['usage_page'] == usage_page:
             return device['path']
@@ -62,7 +62,7 @@ def get_battery():
     except RuntimeError as e:
         logging.error(e)
         return None
-    path = get_path(device_list, USAGE_PAGE)
+    path = get_device_path(device_list, USAGE_PAGE)
     logging.info(f"Device path: {path}")
     device = hid.device()
     device.open_path(path)
@@ -87,14 +87,10 @@ def get_battery():
     return battery, charging, full_charge, online
 
 
-def get_battery2():
-    return 49, 1, 0, 1
-
-
 def create_icon(text: str, color, font):
 
-    # Convert PIL Image to wxPython Bitmap
     def PIL2wx(image):
+        """Convert PIL Image to wxPython Bitmap"""
         width, height = image.size
         return wx.Bitmap.FromBufferRGBA(width, height, image.tobytes())
 
@@ -114,8 +110,6 @@ def create_icon(text: str, color, font):
     myFont = ImageFont.truetype(font, size)
     # Add Text to an image
     I1.text(text_pos, text, font=myFont, fill=color)
-    # image.show()
-    # exit()
     return PIL2wx(image)
 
 
