@@ -176,7 +176,7 @@ class MyFrame(wx.Frame):
         if result == None:
             self.stop_animation = False
             self.battery_str = "-"
-            if not self.animation_thread.is_alive():
+            if self.animation_thread.is_alive():
                 self.animation_thread.join()
             self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), "No Mouse Detected")
             return
@@ -214,6 +214,8 @@ class MyFrame(wx.Frame):
 
         self.stop_animation = True
         self.battery_str = str(battery)
+        if self.animation_thread.is_alive():
+            self.animation_thread.join()
         self.tray_icon.SetIcon(create_icon(self.battery_str, foreground_color, font), MODEL)
 
     def charge_animation(self):
