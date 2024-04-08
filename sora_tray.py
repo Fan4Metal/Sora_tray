@@ -165,7 +165,10 @@ class MyFrame(wx.Frame):
     def thread_worker(self):
         while True:
             self.show_battery()
-            time.sleep(poll_rate)
+            if self.battery_str == "-" or self.battery_str == "Zzz":
+                time.sleep(1)
+            else:
+                time.sleep(poll_rate)
 
     def show_battery(self):
         result = get_battery()
