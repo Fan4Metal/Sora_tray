@@ -174,7 +174,7 @@ class MyFrame(wx.Frame):
         result = get_battery()
 
         if result == None:
-            self.stop_animation = False
+            self.stop_animation = True
             self.battery_str = "-"
             if self.animation_thread.is_alive():
                 self.animation_thread.join()
