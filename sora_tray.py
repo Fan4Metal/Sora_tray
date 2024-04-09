@@ -196,7 +196,7 @@ class MyFrame(wx.Frame):
             self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_100_green.ico")), MODEL)
             return
 
-        if not online:
+        if not online or battery == 0:
             self.stop_animation = True
             self.battery_str = "Zzz"
             if self.animation_thread.is_alive():
