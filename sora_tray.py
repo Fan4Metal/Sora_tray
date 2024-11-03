@@ -154,6 +154,9 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Centre()
 
+        self.notification = wx.adv.NotificationMessage(title=MODEL, message="Charged 100%")
+        self.notification.SetFlags(wx.ICON_INFORMATION)
+        self.notification.UseTaskBarIcon(self.tray_icon)
         self.animation_thread = threading.Thread(target=self.charge_animation, daemon=True)
         self.thread = threading.Thread(target=self.thread_worker, daemon=True)
         self.thread.start()
@@ -163,6 +166,7 @@ class MyFrame(wx.Frame):
             self.Hide()
 
     def thread_worker(self):
+        self.fullcharged = False
         while True:
             self.show_battery()
             if self.battery_str == "-" or self.battery_str == "Zzz":
@@ -173,7 +177,7 @@ class MyFrame(wx.Frame):
     def show_battery(self):
         result = get_battery()
 
-        if result == None:
+        if result is None:
             self.stop_animation = True
             self.battery_str = "-"
             if self.animation_thread.is_alive():
@@ -184,12 +188,16 @@ class MyFrame(wx.Frame):
         battery, charging, full_charge, online = result
 
         if charging:
+            self.fullcharged = False
             self.stop_animation = False
             if not self.animation_thread.is_alive():
                 self.animation_thread.start()
             return
 
         if full_charge:
+            if not self.fullcharged:
+                self.fullcharged = True
+                self.notification.Show(timeout=wx.adv.NotificationMessage.Timeout_Auto)
             self.stop_animation = True
             if self.animation_thread.is_alive():
                 self.animation_thread.join()
@@ -197,6 +205,7 @@ class MyFrame(wx.Frame):
             return
 
         if not online or battery == 0:
+            self.fullcharged = False
             self.stop_animation = True
             self.battery_str = "Zzz"
             if self.animation_thread.is_alive():
@@ -205,6 +214,7 @@ class MyFrame(wx.Frame):
             return
 
         if battery == 100:
+            self.fullcharged = False
             self.stop_animation = True
             self.battery_str = str(battery)
             if self.animation_thread.is_alive():
@@ -212,6 +222,7 @@ class MyFrame(wx.Frame):
             self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_100.ico")), MODEL)
             return
 
+        self.fullcharged = False
         self.stop_animation = True
         self.battery_str = str(battery)
         if self.animation_thread.is_alive():
