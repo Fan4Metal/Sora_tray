@@ -8,7 +8,7 @@ import ctypes
 import hid
 from PIL import Image, ImageDraw, ImageFont
 import wx
-from wx.adv import TaskBarIcon
+from wx.adv import TaskBarIcon, NotificationMessage
 
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
@@ -153,8 +153,7 @@ class MyFrame(wx.Frame):
         self.battery_str = ""
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Centre()
-
-        self.notification = wx.adv.NotificationMessage(title=MODEL, message="Charged 100%")
+        self.notification = NotificationMessage(title=MODEL, message="Charged 100%")
         self.notification.SetFlags(wx.ICON_INFORMATION)
         self.notification.UseTaskBarIcon(self.tray_icon)
         self.animation_thread = threading.Thread(target=self.charge_animation, daemon=True)
@@ -195,13 +194,13 @@ class MyFrame(wx.Frame):
             return
 
         if full_charge:
-            if not self.fullcharged:
-                self.fullcharged = True
-                self.notification.Show(timeout=wx.adv.NotificationMessage.Timeout_Auto)
             self.stop_animation = True
             if self.animation_thread.is_alive():
                 self.animation_thread.join()
             self.tray_icon.SetIcon(wx.Icon(get_resource(R".\icons\battery_100_green.ico")), MODEL)
+            if not self.fullcharged:
+                self.fullcharged = True
+                self.notification.Show(timeout=wx.adv.NotificationMessage.Timeout_Auto)
             return
 
         if not online or battery == 0:
