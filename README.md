@@ -1,5 +1,7 @@
 # Sora Tray Charge Notification
 
+> **Notice:** Development has moved to a new project: https://github.com/Fan4Metal/mouse_tray
+
 ## Introduction
 ![Screenshot](images/screenshot.png)<br>
 This is a script for **Windows** written in Python 3.10+ with `wxPython` and `hidapi` that gets the battery level of a **Ninjutso Sora V2** Wireless mouse and shows it in system tray.
